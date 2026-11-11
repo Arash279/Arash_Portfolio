@@ -1,0 +1,52 @@
+---
+title: "Choosing the Right High-Frequency Machine Model: A Co-Authored Review"
+shortTitle: "Choosing the Right Machine Model"
+summary: "A co-authored journal review (≈93 references) that helps engineers pick a high-frequency motor model by the question they need to answer."
+abstract: "Engineers have dozens of published high-frequency models for inverter-fed motors and little guidance on which one to use. With Dr. Zhenyu Zhao, I co-authored a review of about 93 papers that sorts these models by what they must predict, where their parameters come from and how well they have been validated. The result is a practical selection framework: start from the output you need, then choose the simplest model, and the matching test, that can deliver it. The manuscript, High-Frequency Modeling of Inverter-Fed AC Machines: A Review, is under journal review."
+status: "Manuscript under review"
+order: 3
+category: "Technical Writing"
+role: "Co-author · literature synthesis, framework and writing"
+supervisor: "Dr. Zhenyu Zhao"
+thumbnail: "/images/covers/machine-modeling-review.svg"
+thumbnailAlt: "Concept illustration: layered terminal models reveal an internal voltage point, representing output-specific model selection."
+highlight: "≈93 references · co-authored · under journal review"
+tags: ["High-frequency models", "EMI / insulation", "Technical writing"]
+takeaways:
+  - "Reviewed about 93 papers on high-frequency models of inverter-fed AC machines."
+  - "Built a selection framework: start from the required output, then choose model and validation together."
+  - "Key message for practitioners: a model that predicts terminal current well may still get internal winding voltage wrong."
+---
+
+import Figure from '../../components/Figure.astro';
+
+<Figure src="/images/model-selection.svg" alt="Start from the required output. Terminal current calls for a port model and system-current validation; internal voltage calls for retained internal nodes and local-voltage validation." caption="Figure 1. A simplified example of the selection framework. The output you need decides what the model must keep and what you must test." source="Drawn for this portfolio as a summary of the review's framework." />
+
+## Why a review was needed
+
+Fast inverter switching raises several different engineering questions: conducted EMI, voltage stress inside the winding, bearing voltage and condition monitoring. The literature offers many "wideband" models, but they are rarely compared on the question that matters to a designer: *will this model answer my problem?*
+
+## What the review contributes
+
+**A clear map of the field.** Models are sorted on two separate axes: how the motor is represented (lumped circuit, distributed winding model, multiport model) and where the parameters come from (analytical estimates, field simulation, or measurement). Papers often mix these up, which makes fair comparison difficult.
+
+**Practical selection guidance.** Start from the output you need, then pick the simplest model that keeps that information.
+
+| If you need… | Consider… | And test it on… |
+| --- | --- | --- |
+| Terminal current / EMI filter design | A terminal circuit or multiport model | Measured current with the real cable and drive |
+| Voltage stress inside the winding | A segmented or distributed winding model | Measured voltages at internal points |
+
+**Honest evaluation.** Fitting the terminal impedance, predicting internal behavior and proving system-level performance are three different claims, and each needs its own evidence.
+
+## The key insight in one example
+
+Two models can match the same terminal impedance perfectly yet contain different internal circuits, and so predict different voltages inside the winding. For EMI filter design the terminal fit may be all you need. For insulation design it is not enough; you need a model that keeps the internal nodes, and measurements to check them.
+
+## My role
+
+I co-authored the manuscript with Dr. Zhenyu Zhao (NUS): surveying and organizing the literature, developing the selection framework and writing the paper. The work connects directly to my own induction-motor modeling project, where the same trade-offs came up in practice.
+
+## Status
+
+The manuscript is under review at a journal. This page gives a summary only; the full text and original figures will be shared once the paper is published.

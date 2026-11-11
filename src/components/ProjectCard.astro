@@ -1,0 +1,14 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { url } from '../utils/paths';
+import ProjectCover from './ProjectCover.astro';
+interface Props { project: CollectionEntry<'projects'> }
+const { project } = Astro.props;
+const { data } = project;
+---
+<article class="project-card">
+  <a class="card-image" href={url('/projects/' + project.id + '/')} tabindex="-1"><ProjectCover src={data.thumbnail} alt={data.thumbnailAlt} /></a>
+  <div class="card-body"><div class="card-topline"><span class="eyebrow">{String(data.order).padStart(2, '0')} / {data.category}</span><span class="status">{data.status}</span></div>
+  <h3><a href={url('/projects/' + project.id + '/')}>{data.shortTitle}</a></h3><p>{data.summary}</p><p class="card-highlight">{data.highlight}</p>
+  <div class="card-bottom"><ul class="tags" aria-label="Technologies">{data.tags.map(tag => <li>{tag}</li>)}</ul><a class="case-link" aria-label={'Read case study: ' + data.shortTitle} href={url('/projects/' + project.id + '/')}>Read study <span aria-hidden="true">↗</span></a></div></div>
+</article>

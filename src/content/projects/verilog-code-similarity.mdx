@@ -1,0 +1,90 @@
+---
+title: "Machine-Learning Similarity Detection for Verilog Designs"
+shortTitle: "Verilog Code Similarity Detection"
+summary: "Final Year Project: an ML tool that flags copied or disguised Verilog code to help protect chip-design IP. Catches 97% of copied pairs, about 2.7× better than MOSS."
+abstract: "Chip-design teams need to know when hardware code has been copied, whether to protect their own IP or to check third-party code before reuse. Standard text-matching tools miss copies that have been renamed, reformatted or restructured. For my Final Year Project I built a machine-learning detector for Verilog: eight hardware-aware features, synthetic data to make up for scarce examples of copied code, and a PyTorch classifier. On a realistic test with 48 unrelated pairs for every copied one, it caught 97% of copied pairs and scored about 2.7× higher than MOSS, the standard academic tool. The project was selected for the NUS (Suzhou) Research Institute Best Projects Showcase."
+status: "Completed · Best Projects Showcase"
+period: "Sep 2024 – Jun 2025"
+order: 4
+category: "Machine Learning · Hardware IP"
+role: "Final Year Project · independent, supervised"
+supervisor: "Dr. Chua"
+thumbnail: "/images/covers/verilog-code-similarity.svg"
+thumbnailAlt: "Concept illustration: two HDL source panels surround an eight-feature code-pair representation; vector layers suggest synthetic feature generation."
+highlight: "Recall 0.97 · F1 0.86 vs 0.32 for MOSS · Best Projects Showcase"
+tags: ["PyTorch", "Feature engineering", "Synthetic data"]
+takeaways:
+  - "Designed eight hardware-aware features that see through renaming, reformatting and restructuring."
+  - "Solved the shortage of copied-code examples with a two-stage synthetic data generator (Gaussian Copula → conditional GAN)."
+  - "On a realistic, heavily imbalanced test: recall 0.97 and F1 0.86, versus F1 ≈0.32 for MOSS."
+---
+
+import Figure from '../../components/Figure.astro';
+
+<Figure src="/images/verilog-features.png" alt="Feature distributions for copied and unrelated code pairs across eight static Verilog features and a random-control channel." caption="Figure 1. How the eight features separate copied pairs from unrelated ones. RD is a random control channel used as a sanity check." source="Original project figure." />
+
+## The problem
+
+Hardware description code is valuable IP. Design teams want to spot copied code, whether to protect their own designs or to check code from elsewhere before it goes into a product. Copies are rarely exact: names are changed, comments rewritten, constants re-expressed and blocks reordered.
+
+Generic tools such as MOSS compare text and miss many of these disguised copies. Verilog also behaves differently from software: blocks run in parallel, so reordering code can leave the hardware unchanged.
+
+## My approach
+
+### 1. Hardware-aware features
+
+Each pair of designs is turned into eight numbers that capture different kinds of similarity:
+
+| What it looks at | Features |
+| --- | --- |
+| Text and size | Length difference, TF-IDF distance, shared lines |
+| Coding style | Indentation patterns, reused comments |
+| Constants and logic | Normalized numeric constants, branch patterns |
+| Hardware structure | Number of concurrent `always` / `initial` blocks |
+| Sanity check | One random channel, to confirm the model is not fitting noise |
+
+Normalizing constants means the same value written in a different number format still matches; counting concurrent blocks captures structure that pure text matching ignores.
+
+### 2. Synthetic data for a rare class
+
+Copied pairs are rare. From 299 Verilog projects, after creating disguised copies by hand, I had **409 copied pairs against 74,282 unrelated pairs**, about 1 to 182. A classifier trained on that learns to say "not copied" every time.
+
+I built a two-stage generator that creates realistic synthetic feature vectors for the rare class:
+
+- a **Gaussian Copula** captures how the features vary together, and
+- a **conditional GAN** (ACGAN with a WGAN-GP critic) extends that distribution.
+
+It outperformed the standard SMOTE technique on a distribution-quality score (1.020 vs 0.769).
+
+<Figure src="/images/verilog-augmentation.png" alt="Conditional GAN workflow with generator, dual-head critic, classification losses, Wasserstein loss and gradient penalty." caption="Figure 2. The conditional GAN used to generate synthetic feature vectors for the rare copied-code class." source="Original project methodology figure." />
+
+### 3. Classifier and threshold
+
+A feed-forward neural network in PyTorch classifies each pair, with the decision threshold chosen from the ROC curve.
+
+## Results
+
+The realistic test mirrors real use: a few copied pairs hidden among many unrelated ones (269 copied vs 12,880 unrelated, about 1 to 48).
+
+| Test | Precision | Recall | F1 |
+| --- | ---: | ---: | ---: |
+| **My detector, realistic imbalanced test** | 0.77 | **0.97** | **0.86** |
+| MOSS, same test | 0.26 | 0.42 | ≈0.32 |
+| My detector, balanced test (269 vs 269) | 0.96 | 0.99 | 0.98 |
+
+**What this means in practice:** the detector finds 97 of every 100 copied pairs, while MOSS finds 42. Of the pairs it flags, about three in four are real copies, against one in four for MOSS. That makes it a practical first-pass screen: a reviewer checks a short list instead of the whole codebase.
+
+## What I did
+
+This was my B.Eng. Final Year Project at the NUS (Suzhou) Research Institute, completed independently under Dr. Chua's supervision:
+
+- Built the dataset (SQLite) and created the disguised copies.
+- Designed and implemented the eight features.
+- Built the synthetic data generator and the PyTorch classifier.
+- Ran the comparison with MOSS and wrote the manuscript.
+
+The project was selected for the institute's **Best Projects Showcase**.
+
+## Limits and next steps
+
+The detector was trained and tested on a university Verilog collection with hand-made disguised copies. The next step toward an industrial tool would be testing on real company codebases and adding deeper structural checks, such as comparing control-flow graphs or synthesized netlists. Flagged pairs still go to a human reviewer, who checks them against the code's history and licenses.

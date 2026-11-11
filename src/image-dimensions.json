@@ -1,0 +1,54 @@
+{
+  "/images/motor-fit.svg": {
+    "width": 648,
+    "height": 432
+  },
+  "/images/motor-ablation.svg": {
+    "width": 778,
+    "height": 346
+  },
+  "/images/model-selection.svg": {
+    "width": 960,
+    "height": 580
+  },
+  "/images/choke-spectra.png": {
+    "width": 1455,
+    "height": 831
+  },
+  "/images/choke-spectra.webp": {
+    "width": 1455,
+    "height": 831
+  },
+  "/images/choke-comparison.png": {
+    "width": 1527,
+    "height": 547
+  },
+  "/images/choke-comparison.webp": {
+    "width": 1527,
+    "height": 547
+  },
+  "/images/choke-placement.png": {
+    "width": 1527,
+    "height": 511
+  },
+  "/images/choke-placement.webp": {
+    "width": 1527,
+    "height": 511
+  },
+  "/images/verilog-features.png": {
+    "width": 1268,
+    "height": 760
+  },
+  "/images/verilog-features.webp": {
+    "width": 1268,
+    "height": 760
+  },
+  "/images/verilog-augmentation.png": {
+    "width": 2500,
+    "height": 1300
+  },
+  "/images/verilog-augmentation.webp": {
+    "width": 1600,
+    "height": 832
+  }
+}

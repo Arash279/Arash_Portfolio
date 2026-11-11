@@ -1,0 +1,5 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { url } from '../utils/paths';
+---
+<BaseLayout title="Page not found" description="This page could not be found. Explore the engineering research portfolio." noindex><div class="not-found"><p class="eyebrow">404 / Page not found</p><h1>This path doesn’t lead<br />to a project.</h1><p>The page may have moved. Return to the portfolio or explore the research case studies.</p><div class="hero-actions"><a class="btn" href={url('/')}>Back home</a><a class="btn-outline" href={url('/projects/')}>View projects</a></div></div></BaseLayout>

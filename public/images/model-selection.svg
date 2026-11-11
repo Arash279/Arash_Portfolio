@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="580" viewBox="0 0 960 580" role="img" aria-labelledby="title desc">
+<title id="title">Choose the model for the required output</title><desc id="desc">Terminal current requires a port model and system-current validation. Internal voltage requires retained internal nodes or a transfer map and local-voltage validation.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10" fill="none" stroke="#003366" stroke-width="1.5"/></marker></defs>
+<rect width="960" height="580" fill="white"/>
+<g font-family="Arial,sans-serif" text-anchor="middle">
+<text x="480" y="47" font-size="16" letter-spacing="2" fill="#526170">OUTPUT-SPECIFIC MODEL SELECTION</text>
+<rect x="290" y="78" width="380" height="70" rx="4" fill="#003366"/>
+<text x="480" y="121" font-size="24" fill="white">What do you need to predict?</text>
+<g fill="none" stroke="#003366" stroke-width="2" marker-end="url(#arrow)"><path d="M480 148v27H245v30"/><path d="M480 175h235v30"/></g>
+<rect x="40" y="220" width="410" height="233" rx="4" fill="#f5f8fb" stroke="#ced9e3"/>
+<rect x="510" y="220" width="410" height="233" rx="4" fill="#f5f8fb" stroke="#ced9e3"/>
+<g fill="#003366" font-family="Georgia,serif" font-size="28"><text x="245" y="266">Terminal current</text><text x="715" y="266">Internal voltage</text></g>
+<g fill="#374554" font-size="19"><text x="245" y="307">Retain the terminal relation</text><text x="715" y="307">Retain internal nodes or mapping</text><text x="245" y="346">Equivalent circuit / multiport</text><text x="715" y="346">Segmented / distributed model</text></g>
+<path d="M85 371h320M555 371h320" stroke="#ced9e3"/>
+<g fill="#003366" font-size="18"><text x="245" y="410">Validate system current</text><text x="715" y="410">Validate local voltage</text></g>
+<text x="480" y="507" fill="#374554" font-size="20">Match model structure, available data, and validation.</text>
+<text x="480" y="544" fill="#526170" font-size="16">A terminal fit alone does not validate internal behavior.</text>
+</g></svg>

@@ -1,0 +1,63 @@
+---
+import { projectGlances } from '../data/project-glance';
+import GlanceDiagram from './GlanceDiagram.astro';
+interface Props { id: string }
+const { id } = Astro.props;
+const g = projectGlances[id as keyof typeof projectGlances];
+---
+{g && <section class="glance" aria-labelledby="glance-title">
+  <header class="glance-header"><div><p class="eyebrow">The project in 30 seconds</p><h2 id="glance-title">Project at a Glance</h2></div><span class="glance-status">{g.status}</span></header>
+  <div class="glance-problem"><span class="glance-label">Problem</span><p>{g.problem}</p></div>
+  <div class="glance-work">
+    <div class="work-heading"><span class="glance-label">My work / Approach</span><span class="diagram-note">Conceptual workflow</span></div>
+    <ol class="glance-flow" aria-label={g.label}>
+      {g.steps.map((step,i) => <li><div class="step-top"><span class="step-number">0{i+1}</span><GlanceDiagram kind={step.icon}/></div><h3>{step.title}</h3><p>{step.detail}</p><span class="step-tag">{step.tag}</span></li>)}
+    </ol>
+  </div>
+  <div class="glance-outcome"><div><span class="glance-label">Outcome</span><strong class="glance-result">{g.result}</strong><span class="glance-metric">{g.metric}</span></div><p>{g.outcome}</p></div>
+  <p class="glance-note">{g.note}</p>
+</section>}
+<style>
+  .glance { margin:36px 0 48px; border:1px solid var(--color-border); border-top:3px solid var(--color-accent); border-radius:0 0 6px 6px; overflow:hidden; }
+  .glance-header { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:24px 26px 20px; }
+  .glance-header .eyebrow { font-size:10px; margin:0 0 7px; }
+  .glance h2 { margin:0; font-size:1.65rem; }
+  .glance-status { font-size:11px; line-height:1.4; max-width:130px; color:var(--color-text-muted); text-align:right; }
+  .glance-label { display:block; font-size:11px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:var(--color-accent); }
+  .glance-problem { display:grid; grid-template-columns:90px 1fr; gap:16px; align-items:baseline; padding:0 26px 22px; }
+  .glance-problem p { font-size:16px; line-height:1.5; margin:0; color:var(--color-text-main); }
+  .glance-work { background:var(--color-bg-offset); border-block:1px solid var(--color-border); padding:20px 26px 24px; }
+  .work-heading { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:15px; }
+  .diagram-note { font-size:11px; color:var(--color-text-muted); }
+  .glance-flow { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:26px; padding:0; margin:0; list-style:none; }
+  .glance-flow li { position:relative; display:flex; flex-direction:column; min-width:0; }
+  .glance-flow li:not(:last-child)::after { content:'→'; position:absolute; right:-22px; top:47px; font-size:21px; color:var(--color-accent); }
+  .step-top { position:relative; padding-top:14px; margin-bottom:13px; }
+  .step-number { position:absolute; top:0; font-size:10px; letter-spacing:.1em; color:var(--color-text-muted); }
+  .glance h3 { font-family:var(--font-sans); font-size:16px; font-weight:700; line-height:1.3; letter-spacing:0; margin:0 0 9px; }
+  .glance-flow p { font-size:14px; line-height:1.5; margin:0 0 15px; }
+  .step-tag { display:block; margin-top:auto; padding-top:10px; border-top:1px solid var(--color-border); color:var(--color-accent); font-size:11px; line-height:1.45; }
+  .glance-outcome { display:grid; grid-template-columns:1fr 1.1fr; gap:30px; padding:22px 26px 18px; align-items:center; }
+  .glance-result { display:block; font-family:var(--font-serif); font-size:2rem; font-weight:400; line-height:1.2; color:var(--color-accent); margin:7px 0; }
+  .glance-metric { display:block; font-size:12px; line-height:1.5; color:var(--color-text-muted); }
+  .glance-outcome p { margin:0; font-size:15px; line-height:1.5; color:var(--color-text-main); }
+  .glance-note { margin:0; padding:0 26px 22px; font-size:11px; line-height:1.6; color:var(--color-text-muted); }
+  @media(max-width:600px) {
+    .glance-header { align-items:flex-start; padding:20px; }
+    .glance h2 { font-size:1.45rem; }
+    .glance-status { max-width:96px; font-size:10px; }
+    .glance-problem { grid-template-columns:1fr; gap:7px; padding:0 20px 20px; }
+    .glance-work { padding:20px; }
+    .glance-flow { grid-template-columns:1fr; gap:28px; }
+    .glance-flow li { display:grid; grid-template-columns:100px minmax(0,1fr); column-gap:16px; }
+    .step-top { grid-row:1 / 4; margin:0; padding-top:16px; align-self:center; }
+    .glance h3 { font-size:16px; }
+    .glance-flow p { margin-bottom:10px; }
+    .step-tag { grid-column:2; font-size:11px; padding-top:7px; }
+    .glance-flow li:not(:last-child)::after { content:'↓'; left:45px; top:auto; bottom:-24px; right:auto; }
+    .glance-outcome { grid-template-columns:1fr; gap:14px; padding:20px; }
+    .glance-note { padding:0 20px 20px; }
+    .diagram-note { font-size:10px; }
+  }
+  @media(max-width:360px) { .glance-flow li { grid-template-columns:76px minmax(0,1fr); gap:10px; } .glance-flow li:not(:last-child)::after { left:33px; } }
+</style>

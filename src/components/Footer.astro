@@ -1,0 +1,5 @@
+---
+import { SITE_TITLE } from '../consts';
+import { url } from '../utils/paths';
+---
+<footer class="site-footer"><div class="footer-content"><div><strong>{SITE_TITLE}</strong><p>Electrical systems. Computational methods. Research insight.</p></div><div class="footer-links"><a href={url('/projects/')}>Projects</a><a href={url('/about/')}>About</a><a href={url('/#contact')}>Contact</a></div></div><div class="footer-bottom"><span>© {new Date().getFullYear()} {SITE_TITLE}</span><span>Built with <a href="https://github.com/shravanngoswamii/astro-scholar">Astro Scholar</a></span></div></footer>

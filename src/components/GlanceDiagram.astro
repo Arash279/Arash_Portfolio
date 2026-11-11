@@ -1,0 +1,77 @@
+---
+interface Props { kind: string }
+const { kind } = Astro.props;
+---
+<svg viewBox="0 0 200 88" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+  {kind === 'features' && <>
+    <rect x="8" y="12" width="44" height="61" rx="4"/><rect x="20" y="7" width="44" height="61" rx="4" class="paper"/>
+    <path d="m35 23-6 6 6 6m13-12 6 6-6 6M29 45h25m-25 9h17M72 40h26m-6-5 6 5-6 5"/>
+    {[0,1,2,3,4,5,6,7].map(i => <rect x={110+i*10} y={21+(i%3)*6} width="6" height={43-(i%3)*6} class="tint"/>)}
+    <path d="M109 72h77"/>
+  </>}
+  {kind === 'augment' && <>
+    {[0,1,2,3,4,5].map(i => <circle cx={22+(i%2)*12} cy={22+Math.floor(i/2)*16} r="3"/>)}
+    <path d="M46 40h21m-5-5 5 5-5 5"/><rect x="76" y="14" width="47" height="53" rx="8" class="tint"/>
+    <path d="M86 48c4-30 18-30 27 0M84 56h31M132 40h16m-5-5 5 5-5 5"/>
+    {Array.from({length:15},(_,i) => <circle cx={158+(i%3)*12} cy={14+Math.floor(i/3)*13} r="3" class={i<6?'':'tint'}/>)}
+  </>}
+  {kind === 'network' && <>
+    {[20,44,68].map(y => [14,34,54,74].map(z => <path d={`M29 ${y} 94 ${z}`} class="faint"/>))}
+    {[14,34,54,74].map(y => [28,60].map(z => <path d={`M106 ${y} 171 ${z}`} class="faint"/>))}
+    {[20,44,68].map(y => <circle cx="23" cy={y} r="6" class="paper"/>)}
+    {[14,34,54,74].map(y => <circle cx="100" cy={y} r="6" class="tint"/>)}
+    {[28,60].map(y => <circle cx="177" cy={y} r="8" class="tint"/>)}
+  </>}
+  {kind === 'spectrum' && <>
+    <path d="M18 12v59h170" class="faint"/><path d="M22 61c23 0 29-5 38-23s13-27 18-10 9 37 22 30 18-38 28-36 18 31 55 22"/>
+    {[ [25,61],[46,55],[60,38],[74,22],[91,56],[111,40],[128,22],[148,38],[178,44] ].map(([x,y]) => <circle cx={x} cy={y} r="3" class="paper"/>)}
+  </>}
+  {kind === 'circuit' && <>
+    <circle cx="10" cy="24" r="3"/><circle cx="10" cy="69" r="3"/>
+    <path d="M13 24h16l4-7 7 14 7-14 7 14 7-14 4 7h15m0 0c0-17 14-17 14 0 0-17 14-17 14 0 0-17 14-17 14 0h52v45H13M141 24v17m-9 0h18m-18 7h18m-9 0v21"/>
+    <circle cx="141" cy="24" r="2" class="tint"/><circle cx="141" cy="69" r="2" class="tint"/>
+  </>}
+  {kind === 'optimize' && <>
+    <ellipse cx="101" cy="42" rx="71" ry="31" class="faint"/><ellipse cx="101" cy="42" rx="48" ry="22" class="faint"/><ellipse cx="101" cy="42" rx="22" ry="12"/>
+    <path d="m37 22 28 35 23-29 9 18 6-4"/><circle cx="37" cy="22" r="3" class="paper"/><circle cx="103" cy="42" r="4" class="tint"/>
+    <path d="m153 68 11 0 0-11M164 68c-3-9-9-15-18-18"/>
+  </>}
+  {kind === 'taxonomy' && <>
+    <path d="M99 16v17H32v15m67-15v15m0-15h67v15"/><rect x="71" y="5" width="56" height="15" rx="3" class="tint"/>
+    {[8,75,142].map(x => <rect x={x} y="49" width="50" height="29" rx="4"/>)}
+    <path d="m16 64 5-5 6 10 6-10 6 10 5-5M82 59h36m-36 6h36m-36 6h36M151 58h31v12h-31z"/>
+  </>}
+  {kind === 'matrix' && <>
+    {[0,1,2,3].map(i => <path d={`M47 ${16+i*17}h132`} class="faint"/>)}
+    {[0,1,2,3].map(i => <path d={`M${47+i*44} 16v51`} class="faint"/>)}
+    {[0,1,2].map(i => <path d={`M20 ${24+i*17}h17M${62+i*44} 8h15`}/>)}
+    {[ [64,24],[108,41],[152,58] ].map(([x,y]) => <path d={`m${x} ${y} 4 4 8-8`}/>)}
+    <circle cx="114" cy="24" r="3"/><circle cx="70" cy="58" r="3"/>
+  </>}
+  {kind === 'branch' && <>
+    <path d="m17 44 20-18 20 18-20 18z" class="tint"/><path d="M57 44h27V22h30m-30 22v22h30"/>
+    <rect x="115" y="10" width="73" height="25" rx="4"/><rect x="115" y="54" width="73" height="25" rx="4"/>
+    <path d="M124 22h55m-49 43h13m7 0h13m7 0h9"/><circle cx="144" cy="65" r="3"/><circle cx="164" cy="65" r="3"/>
+  </>}
+  {kind === 'audit' && <>
+    <ellipse cx="40" cy="19" rx="25" ry="9"/><path d="M15 19v39c0 12 50 12 50 0V19M15 38c0 12 50 12 50 0M78 42h24m-5-5 5 5-5 5"/>
+    <rect x="116" y="9" width="69" height="68" rx="4"/>
+    {[23,43,63].map(y => <><path d={`m125 ${y} 4 4 7-9M144 ${y}h30`}/></>)}
+  </>}
+  {kind === 'align' && <>
+    <path d="M10 70h180M10 16v54" class="faint"/>
+    <path d="M15 66c23 0 21-48 34-48s9 48 31 48M103 66c25 0 19-48 33-48s10 48 49 48" stroke-dasharray="3 4" class="faint"/>
+    <path d="M44 66c29 0 30-48 46-48s11 48 56 48M63 66c16-2 15-39 27-39s11 37 39 39M55 12h23m-5-4 5 4-5 4M126 12h-23m5-4-5 4 5 4"/>
+  </>}
+  {kind === 'diagnose' && <>
+    <path d="M12 12v57h178" class="faint"/><path d="M16 57c20-1 25-36 39-36s17 38 38 36 28-15 41-16 28 10 50-3"/>
+    <path d="M16 59c20-1 25-34 39-34s17 34 38 34 26-7 41-10 31 9 50 3" stroke-dasharray="4 4" class="faint"/>
+    <circle cx="153" cy="43" r="22"/><path d="m170 60 16 16M150 32v13m0 6v1"/>
+  </>}
+</svg>
+<style>
+  svg { display:block; width:100%; height:88px; color:var(--color-accent); }
+  .faint { opacity:.38; }
+  .tint { fill:var(--color-accent-light); }
+  .paper { fill:var(--color-bg); }
+</style>

@@ -1,0 +1,86 @@
+---
+title: "Predicting Common-Mode Choke Impedance Without Measuring Every Part"
+shortTitle: "Resonance-Aligned Choke Prediction"
+summary: "A simple, physics-guided predictor that beat a published neural-network benchmark on 39 chokes it had never seen."
+abstract: "EMI filter designers need the impedance of a common-mode choke at every turn count they might use, but measuring every variant is slow. I built a lightweight predictor that estimates an unmeasured choke from a handful of measured ones on the same core. The key idea is to line up the main resonance before blending, so peaks are not smeared together. On 39 held-out chokes, it reached a mean error of 0.083 versus 0.095 for the published neural-network predictions (about 12% lower, and better on 27 of 39 parts), with no neural-network training at all."
+status: "Ongoing · November 2026 snapshot"
+period: "2026 – ongoing"
+order: 2
+category: "EMI / Impedance Prediction"
+role: "Independent researcher"
+thumbnail: "/images/covers/common-mode-choke.svg"
+thumbnailAlt: "Concept illustration: layered choke spectra bring displaced resonance peaks into line, representing resonance-aligned interpolation."
+highlight: "39 unseen chokes · 12% lower error than a published neural network · no training"
+tags: ["NumPy", "EMI filters", "Interpolation"]
+takeaways:
+  - "Predicts a choke's impedance from 100 kHz to 200 MHz using only 10 measured reference parts on the same core."
+  - "Beat published neural-network predictions on held-out parts: 0.083 vs 0.095 mean error, better on 27 of 39."
+  - "Showed that where you place the reference measurements can cut error by 2–6×, a cheap win before adding model complexity."
+resourceLinks:
+  - label: "Public measurement data (NUS-EMBench)"
+    href: "https://github.com/zhanghan200108-code/NUS-EMBench"
+  - label: "Published neural-network benchmark (RANN)"
+    href: "https://github.com/zhanghan200108-code/RANN"
+---
+
+import Figure from '../../components/Figure.astro';
+
+<Figure src="/images/choke-spectra.png" alt="W452 13-turn and 38-turn chokes: measured and predicted magnitude and phase, compared with the published neural-network predictions." caption="Figure 1. Two of the 39 test chokes. The resonance-aligned prediction tracks the measured curve and its main resonance; the published neural-network predictions are shown for comparison." source="Analysis of public NUS-EMBench measurements and the published RANN predictions. Test chokes were never used to build or tune the method." />
+
+## The problem
+
+A common-mode choke is the workhorse of an EMI filter. Its impedance depends on the core, the winding and many parasitic effects, and it changes with the number of turns. Designers want to know the curve for every candidate turn count, but measuring each one means winding and testing a physical part.
+
+A published approach uses a neural network to predict unmeasured chokes. I asked a simpler question: **how far can you get with physics and good interpolation alone?**
+
+## The idea: line up the resonance first
+
+Adding turns moves the choke's main resonance to a lower frequency. If you simply average two measured curves point by point, their peaks sit at different frequencies and the result is a smeared, wrong curve.
+
+So the method works in two steps:
+
+1. **Learn how the resonance moves.** Across the reference chokes, resonance frequency follows a power law in turn count, a straight line on a log–log plot:
+
+$$
+\ln f_r=a+b\ln N
+$$
+
+2. **Shift, then blend.** For a target turn count, take the two nearest measured chokes, shift each curve so its resonance lines up with where the target's should be, then blend log magnitude and phase.
+
+The whole method is a few lines of NumPy, runs instantly and needs no training. One fitted slope carries the physics.
+
+## Results on parts it had never seen
+
+I developed the method on two cores, froze it, then tested it once on a third core (W452): 10 measured reference chokes (2–6 and 46–50 turns) used to predict 39 chokes in between (7–45 turns). The predictions were saved before looking at the true curves.
+
+| Method | Mean error (lower is better) |
+| --- | ---: |
+| **Resonance-aligned prediction (mine)** | **0.083** |
+| Published neural-network predictions (RANN) | 0.095 |
+| Blending without alignment | ≈0.46 |
+| Simple point-by-point interpolation | ≈0.73 |
+
+*Error is the relative difference between predicted and measured complex impedance across the whole band, averaged over the 39 chokes.*
+
+The aligned method was about 12% better than the neural network on average and better on 27 of the 39 parts. Lining up the resonance is what makes the difference: without it, error is more than five times higher.
+
+<Figure src="/images/choke-comparison.png" alt="Per-device error across three cores, comparing the resonance-aligned method with the published neural-network predictions." caption="Figure 2. Error for every choke on three cores. W358 and W620 were used for development; W452 is the held-out test." source="Comparison with the published RANN predictions." />
+
+## A cheap way to cut error further: measure smarter
+
+The 10 reference chokes in the public dataset are bunched at the two ends of the turn range. Replaying the method with references spread evenly across the range, using existing measurements, cut error by roughly 2–6× in every core and reference-count combination I tried (18 in total).
+
+<Figure src="/images/choke-placement.png" alt="Comparison of reference-measurement placement strategies across several reference counts and cores." caption="Figure 3. Spreading the reference measurements across the turn range beats bunching them at the ends in every case tested." source="Replay using existing measurements." />
+
+The engineering takeaway: choosing *which* parts to measure can matter as much as choosing a fancier model.
+
+## What I did
+
+- Designed and implemented the resonance-aligned predictor in Python/NumPy.
+- Set up a clean test: develop on two cores, freeze the method, test once on a third.
+- Compared against the published neural-network predictions part by part and band by band.
+- Ran the reference-placement study.
+
+## Limits and next steps
+
+The method needs measured reference chokes on the same core, so it fills in gaps rather than predicting a brand-new design. The neural network still does better above about 20 MHz and on one development core (W620), where higher-order resonances do not follow a single shift. Current work looks at handling those higher-order modes and at deciding automatically when more reference measurements are needed.

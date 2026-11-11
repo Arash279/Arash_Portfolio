@@ -1,0 +1,106 @@
+---
+title: "Wideband Induction-Motor Model: Fast, Repeatable, Laptop-Ready"
+shortTitle: "Wideband Induction-Motor Modeling"
+summary: "A circuit model that tracks a motor from mains frequency to radio frequency, built from one measurement sweep and fitted in about 20 seconds on a laptop."
+abstract: "Inverter-fed motors cause EMI problems that a textbook motor model cannot predict, because the trouble lives at megahertz frequencies. I built a circuit model of a 1.5 HP induction motor that covers 100 Hz to 100 MHz, six decades, from a single impedance sweep. A tuned fitting workflow identifies all parameters in about 20 seconds on an ordinary laptop and returns essentially the same answer on every run, with about 3× lower error than a standard single-algorithm fit. Along the way I extended the circuit itself, adding a resonant branch that captures high-frequency behavior the published circuit missed."
+status: "Completed · August 2026"
+period: "Aug 2025 – Aug 2026"
+order: 1
+category: "Electrical Modeling"
+role: "Modeling, fitting workflow and analysis · NUS EE5003 M.Sc. project"
+supervisor: "Dr. Zhenyu Zhao"
+thumbnail: "/images/covers/induction-motor.svg"
+thumbnailAlt: "Concept illustration: an induction-machine cross-section opens into a response curve, representing circuit modeling and parameter fitting."
+highlight: "100 Hz–100 MHz · one sweep · ≈20 s on a laptop · same result every run"
+tags: ["Python / SciPy", "Equivalent circuits", "EMI / EMC"]
+takeaways:
+  - "Low overhead: one impedance sweep, an ordinary laptop and about 20 seconds per fit. No special hardware, no long training runs."
+  - "High capability: one model covers six decades of frequency, including the resonances that drive EMI, and gives the same answer on every run."
+  - "Circuit exploration: grew the model from 11 to 14 parameters, adding a resonant branch for the high-frequency behavior the published circuit missed."
+resourceLinks:
+  - label: "Public measurement dataset"
+    href: "https://github.com/Arash279/motor-impedance-db"
+  - label: "Comparison data (CSV)"
+    href: "/data/motor-ablation.csv"
+---
+
+import Figure from '../../components/Figure.astro';
+
+<Figure src="/images/motor-fit.svg" alt="Real and imaginary impedance of a 1.5 HP induction motor: measured spectrum compared with the 14-parameter model from 100 Hz to 100 MHz." caption="Figure 1. Measured impedance against the 14-parameter model, 100 Hz to 100 MHz. One small circuit follows the motor across six decades, including its resonances." source="Measurements by the NUS MMIC Modeling and Package Laboratory; model, fitting and analysis are my work." />
+
+## Why this matters
+
+Modern drives switch motors with very fast voltage edges. Those edges push high-frequency currents through the motor's stray capacitances, which show up as conducted EMI, bearing currents and insulation stress. To design an EMI filter or check insulation, an engineer needs the motor's impedance not just at 50 Hz but up to tens of megahertz.
+
+The classic motor equivalent circuit stops being useful well below that. The usual alternatives are expensive: finite-element models need detailed geometry and long computation, and black-box or neural-network fits need lots of data and say little about the physics.
+
+**My goal was a model that is cheap to build and cheap to run, yet accurate across the whole band.**
+
+## What makes it practical
+
+| | What it takes |
+| --- | --- |
+| Input data | One impedance sweep at the motor terminals (1,590 points) |
+| Hardware | An ordinary laptop |
+| Time to fit | About 20 seconds for a full identification |
+| Repeatability | Essentially the same answer on all 10 runs with different random seeds |
+| Output | A small circuit (12–14 components) that drops straight into circuit or drive simulation |
+
+Because the result is a circuit, every parameter has a physical meaning: winding resistance and leakage, magnetizing inductance, winding-to-frame capacitance. An engineer can read it, sanity-check it and reuse it, which a black-box curve fit does not allow.
+
+## Exploring the circuit model
+
+I started from a published three-phase motor circuit and developed it in three steps.
+
+1. **11 parameters (starting point).** Captures the main winding, magnetizing and capacitive paths. It follows the low- and mid-frequency response but drifts away at the top of the band.
+2. **12 parameters (stable baseline).** Adds an extra inductive branch. This is the version I used for the comparison study below, because it fits well and converges to the same answer every time.
+3. **14 parameters (high-frequency extension).** Above about 10 MHz the measured phase rises and the impedance recovers, which no branch in the original circuit can produce. I replaced the extra inductor with a resonant branch, an inductor in parallel with a resistor–capacitor pair:
+
+$$
+Z_{\mathrm{lad}}=j\omega L_{\mathrm{ad}}\;\parallel\;\left(R_{\mathrm{ad}}+\frac{1}{j\omega C_{\mathrm{ad}}}\right)
+$$
+
+This branch lets the model follow the high-frequency tail in Figure 1. Each step came from looking at where model and measurement disagreed, then asking which physical path could explain the gap.
+
+## Making the fit fast and reliable
+
+Fitting 12–14 coupled parameters whose values span many orders of magnitude, from ohms to kilohms and picofarads to henries, is hard. A naive optimizer gets stuck or gives a different answer every run. Four design choices fixed that:
+
+- **Fit in log space.** Every parameter stays positive, and a picofarad gets the same attention as a henry.
+- **Global search, then local polish.** Differential evolution finds the right region; multi-start robust least squares then refines it.
+- **Balance the data.** Real and imaginary parts are scaled separately and frequency regions are weighted, so the big resonance peak does not drown out smaller features.
+- **Smart starting values.** Capacitances and inductances are first estimated from the flat regions of the measured curve.
+
+```python
+# Core parameterization: optimize log-values, so every R, L, C stays positive
+theta = np.log(initial_parameters)
+parameters = np.exp(theta)
+```
+
+## Proof: a head-to-head comparison
+
+To show each design choice earns its place, I ran the 12-parameter fit 10 times with each method and compared the error and the run-to-run spread.
+
+<Figure src="/images/motor-ablation.svg" alt="Average fitting error with run-to-run spread for six optimizer configurations on the 12-parameter model, 10 runs each." caption="Figure 2. Average fitting error (points) and run-to-run spread (bars), 10 runs per method." source="Redrawn from the archived comparison data (CSV linked above)." />
+
+| Method | Error vs. full workflow | Run-to-run spread |
+| --- | ---: | --- |
+| **Full workflow** | **1×** | **essentially none** |
+| Without frequency weighting | ≈1× | large |
+| Without separate Re/Im scaling | 1.1× | large |
+| Least squares only | 1.6× | none (same start every time) |
+| Genetic algorithm + least squares | 1.9× | very large |
+| Differential evolution only | 3.2× | very large |
+
+Every simplified version is less accurate, less repeatable, or both. Only the full workflow is accurate *and* gives the same answer every time, which is what an engineer needs before trusting a model in a design.
+
+## What I did
+
+- Implemented the circuit model and the fitting workflow in Python (NumPy, SciPy), with separate modules for the model, initialisation, optimization and validation.
+- Extended the circuit from 11 to 14 parameters and tested each version against measurement.
+- Designed and ran the method comparison, and used residual analysis to find where the circuit still falls short.
+- Helped organize the laboratory's measurements into a public dataset.
+
+## Limits and next steps
+
+The model was fitted and checked on one motor in one wiring configuration; testing it on other motors and operating conditions is the natural next step. A few parameters sit close to their bounds, so not every value is uniquely pinned down by a single sweep. The project closed in August 2026 with a delivered report.

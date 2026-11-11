@@ -1,0 +1,10 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+const projects = (await getCollection('projects')).sort((a,b) => a.data.order - b.data.order);
+---
+<BaseLayout title="Projects" description="Four engineering case studies: a fast wideband motor model, EMI choke prediction, a co-authored review and an ML tool for chip-design IP.">
+  <div class="intro"><p class="eyebrow">Selected projects / 01—04</p><h1>Practical models from limited data.</h1><p>Four projects with one theme: getting useful engineering answers fast, from as little data and computing power as possible. Three are in electrical engineering (motor modeling, EMI choke prediction and a co-authored review); the fourth applies machine learning to protecting chip-design IP.</p><p>Each case study covers the problem, what I built, the results and what comes next.</p></div>
+  <div class="project-grid">{projects.map(project => <ProjectCard project={project} />)}</div>
+</BaseLayout>

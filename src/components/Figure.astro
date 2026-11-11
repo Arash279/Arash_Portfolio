@@ -1,0 +1,9 @@
+---
+import { url } from '../utils/paths';
+import dimensions from '../image-dimensions.json';
+interface Props { src: string; alt: string; caption: string; source?: string; width?: number; height?: number }
+const { src, alt, caption, source, width, height } = Astro.props;
+const size = dimensions[src as keyof typeof dimensions];
+const displaySrc = src.endsWith('.png') ? src.replace(/\.png$/, '.webp') : src;
+---
+<figure><a class="figure-image" href={url(src)} aria-label={'Open full-size figure: ' + alt}><img src={url(displaySrc)} alt={alt} width={width || size?.width} height={height || size?.height} loading="lazy" /></a><figcaption>{caption}{source && <span class="figure-source">{source}</span>}<a class="original-link" href={url(src)}>View full-size figure ↗</a></figcaption></figure>
