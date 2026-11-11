@@ -29,8 +29,6 @@ jobs:
       - name: Require the approved site configuration
         run: test -n "$SITE_URL" && test -n "$BASE_PATH"
       - uses: actions/configure-pages@v5
-        with:
-          enablement: true
       - run: npm ci
       - run: npm run build
       - run: python3 scripts/check-site.py "$BASE_PATH" "$SITE_URL"
