@@ -2,7 +2,7 @@
 // Research case studies retain their separately confirmed project briefs.
 export const PROFILE = {
   name: 'Fengyifei XU',
-  photo: '',
+  photo: '/images/portrait.webp',
   email: 'xufengyifei@gmail.com',
   phone: '+65 8430 9583',
   location: 'Singapore',
