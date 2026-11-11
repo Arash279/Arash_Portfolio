@@ -2,7 +2,7 @@
 
 # Fengyifei XU — Engineering Portfolio
 
-**Electrical Engineer · Power Electronics · Electric Machines · EMC**
+**Electrical Engineer · Power Electronics · Electric Machines · EMC**<br>
 M.Sc. Electrical Engineering, National University of Singapore (Dec 2026) · Available in Singapore from January 2027
 
 <br>
